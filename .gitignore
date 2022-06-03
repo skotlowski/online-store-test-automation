@@ -6,6 +6,9 @@ pass.txt
 # C extensions
 *.so
 
+pass.json
+url.txt
+
 # Distribution / packaging
 .Python
 build/
