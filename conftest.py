@@ -25,7 +25,7 @@ def login_and_password():
     return data
 
 
-@fixture
+@fixture(scope='function')
 def session_logged(url, login_and_password):
     session = Session()
     session.headers.update(
@@ -47,7 +47,7 @@ def browser():
     driver.quit()
 
 
-@fixture
+@fixture(scope='function')
 def browser_logged(url, session_logged):
     login_channel = session_logged.cookies.get('LOGIN_CHANNEL')
     login_status = session_logged.cookies.get('LOGIN_STATUS')
@@ -57,18 +57,18 @@ def browser_logged(url, session_logged):
 
     driver.get(url=url)
 
-    browser.add_cookie({
+    driver.add_cookie({
         'name': 'LOGIN_CHANNEL',
         'value': login_channel
     })
-    browser.add_cookie({
+    driver.add_cookie({
         'name': 'LOGIN_STATUS',
         'value': login_status
     })
-    browser.add_cookie({
+    driver.add_cookie({
         'name': 'PHPSESSID',
         'value': php_sess_id
     })
 
     yield driver
-    driver.quit()
+    #driver.quit()
