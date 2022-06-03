@@ -1,6 +1,9 @@
 from requests import Session
+from pytest import mark
 
 
+@mark.browser
+@mark.request
 def test_login_and_inject_cookies_to_browser(url, login_and_password, browser):
     session = Session()
     session.headers.update(
