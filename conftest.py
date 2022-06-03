@@ -45,3 +45,30 @@ def browser():
     driver = webdriver.Firefox()
     yield driver
     driver.quit()
+
+
+@fixture
+def browser_logged(url, session_logged):
+    login_channel = session_logged.cookies.get('LOGIN_CHANNEL')
+    login_status = session_logged.cookies.get('LOGIN_STATUS')
+    php_sess_id = session_logged.cookies.get('PHPSESSID')
+
+    driver = webdriver.Firefox()
+
+    driver.get(url=url)
+
+    browser.add_cookie({
+        'name': 'LOGIN_CHANNEL',
+        'value': login_channel
+    })
+    browser.add_cookie({
+        'name': 'LOGIN_STATUS',
+        'value': login_status
+    })
+    browser.add_cookie({
+        'name': 'PHPSESSID',
+        'value': php_sess_id
+    })
+
+    yield driver
+    driver.quit()
