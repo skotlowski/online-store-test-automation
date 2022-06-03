@@ -1,15 +1,32 @@
 from pytest import fixture
 from requests import Session
 from selenium import webdriver
+import json
+
+
+def json_file():
+    pass_file = 'pass.json'
+    with open(pass_file) as json_file:
+        data = json.load(json_file)
+        return data
 
 
 @fixture
 def url():
-    return 'https://www.mycenter.pl/'
+    file = 'url.txt'
+    with open(file) as txt_file:
+        data = txt_file.readline()
+        return data
 
 
 @fixture
-def session_logged(url):
+def login_and_password():
+    data = json_file()
+    return data
+
+
+@fixture
+def session_logged(url, login_and_password):
     session = Session()
     session.headers.update(
         {
@@ -18,13 +35,7 @@ def session_logged(url):
     )
     session.get(url=url)
 
-    login_info = {
-        'form': 1,
-        'email': 'x',
-        'password': 'x'
-    }
-
-    session.post(url=f'{url}login.html', data=login_info)
+    session.post(url=f'{url}/login_check', data=login_and_password)
 
     return session
 

@@ -1,57 +1,42 @@
 from requests import Session
 
 
-def test_login_and_inject_cookies_to_browser(url, browser):
+def test_login_and_inject_cookies_to_browser(url, login_and_password, browser):
     session = Session()
     session.headers.update(
         {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.67 Safari/537.36'
-        }
-    )
-    session.get(url=url)
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.67 Safari/537.36',
+        })
 
-    login_info = {
-        'form': 1,
-        'email': 'x',
-        'password': 'x'
-    }
 
     expected_response = 200
-    response = session.post(url=f'{url}login.html', data=login_info)
+    session.get(url=url)
+    response = session.post(url=f'{url}/login_check', data=login_and_password)
+
+    LOGIN_CHANNEL = session.cookies.get('LOGIN_CHANNEL')
+    LOGIN_STATUS = session.cookies.get('LOGIN_STATUS')
+    PHPSESSID = session.cookies.get('PHPSESSID')
+
     assert response.status_code == expected_response
 
-    PHPSESSID = session.cookies.get('PHPSESSID')
-    ebox_email = session.cookies.get('ebox_email')
-    ebox_imie = session.cookies.get('ebox_imie')
-    referer_enp = session.cookies.get('referer_enp')
-    referer_id = session.cookies.get('referer_id')
+    browser.get(url=url)
 
-    browser.get(url)
-
+    browser.add_cookie({
+        'name': 'LOGIN_CHANNEL',
+        'value': LOGIN_CHANNEL
+    })
+    browser.add_cookie({
+        'name': 'LOGIN_STATUS',
+        'value': LOGIN_STATUS
+    })
     browser.add_cookie({
         'name': 'PHPSESSID',
         'value': PHPSESSID
     })
-    browser.add_cookie({
-        'name': 'ebox_email',
-        'value': ebox_email
-    })
-    browser.add_cookie({
-        'name': 'ebox_imie',
-        'value': ebox_imie
-    })
-    browser.add_cookie({
-        'name': 'referer_enp',
-        'value': referer_enp
-    })
-    browser.add_cookie({
-        'name': 'referer_id',
-        'value': referer_id
-    })
 
-    browser.get(f'{url}konto.html')
+    browser.get(f'{url}/profile')
 
-    expected_response = 'Twoje ostatnie zamówienie'
+    expected_response = 'Zmień hasło'
     assert expected_response in browser.page_source
 
 
