@@ -2,9 +2,8 @@ from requests import Session
 from pytest import mark
 
 
-@mark.browser
 @mark.request
-def test_login_and_inject_cookies_to_browser(url, login_and_password, browser):
+def test_login(url, login_and_password):
     session = Session()
     session.headers.update(
         {
@@ -16,30 +15,4 @@ def test_login_and_inject_cookies_to_browser(url, login_and_password, browser):
     session.get(url=url)
     response = session.post(url=f'{url}/login_check', data=login_and_password)
 
-    login_channel = session.cookies.get('LOGIN_CHANNEL')
-    login_status = session.cookies.get('LOGIN_STATUS')
-    php_sess_id = session.cookies.get('PHPSESSID')
-
     assert response.status_code == expected_response
-
-    browser.get(url=url)
-
-    browser.add_cookie({
-        'name': 'LOGIN_CHANNEL',
-        'value': login_channel
-    })
-    browser.add_cookie({
-        'name': 'LOGIN_STATUS',
-        'value': login_status
-    })
-    browser.add_cookie({
-        'name': 'PHPSESSID',
-        'value': php_sess_id
-    })
-
-    browser.get(f'{url}/profile')
-
-    expected_response = 'Zmień hasło'
-    assert expected_response in browser.page_source
-
-
