@@ -1,5 +1,6 @@
 from pytest import fixture
 from requests import Session
+from selenium.webdriver.common.by import By
 from selenium import webdriver
 import json
 
@@ -25,7 +26,7 @@ def login_and_password():
     return data
 
 
-@fixture
+@fixture(scope='function')
 def session_logged(url, login_and_password):
     session = Session()
     session.headers.update(
@@ -45,3 +46,35 @@ def browser():
     driver = webdriver.Firefox()
     yield driver
     driver.quit()
+
+
+@fixture(scope='function')
+def browser_logged(url, session_logged):
+    login_channel = session_logged.cookies.get('LOGIN_CHANNEL')
+    login_status = session_logged.cookies.get('LOGIN_STATUS')
+    php_sess_id = session_logged.cookies.get('PHPSESSID')
+
+    driver = webdriver.Firefox()
+    driver.maximize_window()
+
+    driver.get(url=url)
+
+    driver.add_cookie({
+        'name': 'LOGIN_CHANNEL',
+        'value': login_channel
+    })
+    driver.add_cookie({
+        'name': 'LOGIN_STATUS',
+        'value': login_status
+    })
+    driver.add_cookie({
+        'name': 'PHPSESSID',
+        'value': php_sess_id
+    })
+
+    driver.find_element(by=By.CSS_SELECTOR, value="[class='c-alert_close'").click()
+
+    yield driver
+    driver.quit()
+
+
