@@ -2,6 +2,7 @@ from requests import Session
 from pytest import mark
 
 
+@mark.login
 @mark.request
 class LoginTests:
 

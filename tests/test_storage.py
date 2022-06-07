@@ -2,6 +2,7 @@ from pytest import mark
 from selenium.webdriver.common.by import By
 
 
+@mark.storage
 @mark.browser
 class StorageTests:
 
@@ -26,10 +27,11 @@ class StorageTests:
 
         assert expected_item == item
 
-    def clear_storage(self, browser_logged, url):
-        browser = browser_logged
-        # Navigate to storage
-        browser.get(url=f'{url}/ulubione/storage')
-        # Remove all items from storage
-        browser.find_element(by=By.CSS_SELECTOR, value="[class='c-btn is-link is-wishlistRemoveAll'").click()
+
+def clear_storage(self, browser_logged, url):
+    browser = browser_logged
+    # Navigate to storage
+    browser.get(url=f'{url}/ulubione/storage')
+    # Remove all items from storage
+    browser.find_element(by=By.CSS_SELECTOR, value="[class='c-btn is-link is-wishlistRemoveAll'").click()
 
