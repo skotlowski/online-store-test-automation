@@ -20,7 +20,7 @@ def url():
         return data
 
 
-@fixture
+@fixture(scope='session')
 def login_and_password():
     data = json_file()
     return data
@@ -41,7 +41,7 @@ def session_logged(url, login_and_password):
     return session
 
 
-@fixture
+@fixture(scope='session')
 def browser():
     driver = webdriver.Firefox()
     yield driver
