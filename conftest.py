@@ -12,7 +12,7 @@ def json_file():
         return data
 
 
-@fixture
+@fixture(scope='session')
 def url():
     file = 'url.txt'
     with open(file) as txt_file:
