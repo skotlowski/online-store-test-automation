@@ -28,7 +28,7 @@ class StorageTests:
         assert expected_item == item
 
 
-def clear_storage(self, browser_logged, url):
+def clear_storage(browser_logged, url):
     browser = browser_logged
     # Navigate to storage
     browser.get(url=f'{url}/ulubione/storage')
