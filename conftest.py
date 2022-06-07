@@ -26,7 +26,7 @@ def login_and_password():
     return data
 
 
-@fixture(scope='function')
+@fixture(scope='session')
 def session_logged(url, login_and_password):
     session = Session()
     session.headers.update(
