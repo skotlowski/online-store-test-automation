@@ -12,7 +12,7 @@ def json_file():
         return data
 
 
-@fixture
+@fixture(scope='session')
 def url():
     file = 'url.txt'
     with open(file) as txt_file:
@@ -20,7 +20,7 @@ def url():
         return data
 
 
-@fixture
+@fixture(scope='session')
 def login_and_password():
     data = json_file()
     return data
@@ -35,21 +35,26 @@ def session_logged(url, login_and_password):
         }
     )
     session.get(url=url)
-
     session.post(url=f'{url}/login_check', data=login_and_password)
-
     return session
 
 
-@fixture
-def browser():
+@fixture(scope='session')
+def browser_logged(url, login_and_password):
     driver = webdriver.Firefox()
+    driver.get(url=url)
+    driver.get(url=f'{url}/login')
+    driver.find_element(by=By.CSS_SELECTOR, value='#enp_customer_form_login_username')\
+        .send_keys(login_and_password.get('enp_customer_form_login[username]'))
+    driver.find_element(by=By.CSS_SELECTOR, value='#enp_customer_form_login_password')\
+        .send_keys(login_and_password.get('enp_customer_form_login[password]'))
+    driver.find_element(by=By.CSS_SELECTOR, value='input[type="submit"]').click()
     yield driver
     driver.quit()
 
 
 @fixture(scope='function')
-def browser_logged(url, session_logged):
+def browser_logged_with_requests(url, session_logged):
     login_channel = session_logged.cookies.get('LOGIN_CHANNEL')
     login_status = session_logged.cookies.get('LOGIN_STATUS')
     php_sess_id = session_logged.cookies.get('PHPSESSID')
