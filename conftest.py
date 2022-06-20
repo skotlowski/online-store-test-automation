@@ -1,6 +1,8 @@
 from pytest import fixture
 from requests import Session
+from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
 from selenium import webdriver
 import json
 
@@ -42,6 +44,7 @@ def session_logged(url, login_and_password):
 @fixture(scope='session')
 def browser_logged(url, login_and_password):
     driver = webdriver.Firefox()
+    driver.maximize_window()
     driver.get(url=url)
     driver.get(url=f'{url}/login')
     driver.find_element(by=By.CSS_SELECTOR, value='#enp_customer_form_login_username')\
@@ -49,8 +52,10 @@ def browser_logged(url, login_and_password):
     driver.find_element(by=By.CSS_SELECTOR, value='#enp_customer_form_login_password')\
         .send_keys(login_and_password.get('enp_customer_form_login[password]'))
     driver.find_element(by=By.CSS_SELECTOR, value='input[type="submit"]').click()
+    driver.implicitly_wait(1)
+    driver.find_element(by=By.CSS_SELECTOR, value='.c-alert_close').click()
     yield driver
-    driver.quit()
+    #driver.quit()
 
 
 @fixture(scope='function')
